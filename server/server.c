@@ -11,10 +11,11 @@ int main(int argc, char *argv[])
 {
 	int ss = -1;
 	int conn = -1;
-	//int n;
+	//int n
 	int t = 0;
 	struct sockaddr_in serv;
   char buf[MAXLINE];
+	pid_t pid;
 
 	if ((ss = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 	 err_exit(1,"create socket error");
@@ -29,10 +30,21 @@ int main(int argc, char *argv[])
 	{
 		if ((conn = accept(ss, (struct sockaddr *)NULL, NULL))< 0)
       return -1;
-    read(conn, buf, sizeof(buf));
-    printf("request:%s\n", buf);
-    write(conn, buf, sizeof(buf));
-    close(conn);
+		pid = fork();
+		if (pid < 0)
+			err_sys("fork error");
+		else if (pid == 0)
+		{
+			close(ss);
+			read(conn, buf, sizeof(buf));
+			printf("request:%s\n", buf);
+			write(conn, buf, sizeof(buf));
+			close(conn);
+			exit(0);
+		}
+		else{
+    	close(conn);
+		}
 	}
 	close(ss);
 }
