@@ -20,6 +20,19 @@ void sig_child(int signo)
 	}
 }
 */
+
+void ProcessTask(void *arg)
+{
+	int n;
+	int connect = *(int *)arg;
+	char buf[4096] = {0};
+	n = read(connect, buf, sizeof(buf));
+	printf("%s\n", buf);
+	n = write(connect, buf, sizeof(buf));
+	close(connect);
+	pthread_exit(NULL);
+}
+
 int main(int argc, char *argv[])
 {
 	int ss = -1;
@@ -30,7 +43,7 @@ int main(int argc, char *argv[])
   char buf[MAXLINE];
 	pid_t pid;
 
-	signal(SIGCHLD, SIG_IGN);
+	/*signal(SIGCHLD, SIG_IGN);*/
 	if ((ss = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 	 err_exit(1,"create socket error");
 	bzero(&serv, sizeof(serv));
@@ -40,6 +53,7 @@ int main(int argc, char *argv[])
 	if ((t = bind(ss, (struct sockaddr *) &serv, sizeof(serv))) < 0)
     err_exit(1, "bind error");
 	listen(ss, 10);
+	/*
 	while(1)
 	{
 		if ((conn = accept(ss, (struct sockaddr *)NULL, NULL))< 0)
@@ -59,6 +73,14 @@ int main(int argc, char *argv[])
 		else{
     	close(conn);
 		}
+	}*/
+	while(1)
+	{
+		conn = accept(ss, (struct sockaddr *)NULL, NULL);
+		if (conn < 0)
+			continue;
+		if ((pthread_create(&newthread, NULL, ProcessTask, &conn)) != 0)
+			continue;
 	}
 	close(ss);
 }
