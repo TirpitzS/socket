@@ -41,7 +41,8 @@ int main(int argc, char *argv[])
 	int t = 0;
 	struct sockaddr_in serv;
   char buf[MAXLINE];
-	pid_t pid;
+	//pid_t pid;
+	pthread_t newthread;
 
 	/*signal(SIGCHLD, SIG_IGN);*/
 	if ((ss = socket(AF_INET, SOCK_STREAM, 0)) < 0)
