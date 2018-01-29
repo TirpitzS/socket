@@ -3,10 +3,23 @@
 #include <string.h>
 #include <netinet/in.h>
 #include <unistd.h>
+#include <signal.h>
+#include <wait.h>
 #include "err.h"
 
 #define MAXLINE 4096
-
+/*
+void sig_child(int signo)
+{
+	pid_t pid;
+	int stat;
+	while ((pid = waitpid(-1, &stat, WNOHANG)) >= 0)
+	{
+		//printf("child %d terminated\n", pid);
+		return;
+	}
+}
+*/
 int main(int argc, char *argv[])
 {
 	int ss = -1;
@@ -17,6 +30,7 @@ int main(int argc, char *argv[])
   char buf[MAXLINE];
 	pid_t pid;
 
+	signal(SIGCHLD, SIG_IGN);
 	if ((ss = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 	 err_exit(1,"create socket error");
 	bzero(&serv, sizeof(serv));
