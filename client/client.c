@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
 
   struct sockaddr_in serv;
   int sockfd;
-
+  fork();
   if (ParameterHandle(argc, argv, ip, &port, msg) != 0)
     err_exit(1, USAGE);
   if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
